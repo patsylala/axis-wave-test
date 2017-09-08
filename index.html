@@ -74,8 +74,6 @@
         controls.enablePan = false;
         controls.update();
         controls.zoomSpeed = 5.0;
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
 
         //SCENE
         scene = new THREE.Scene();
@@ -86,7 +84,6 @@
 
         light2 = new THREE.PointLight(0xffffff, 0.5);
         scene.add(light2);
-
 
       }
 
