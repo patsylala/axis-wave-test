@@ -132,13 +132,17 @@
             // } );
 
         lineGeometry.vertices.push(
-          new THREE.Vector3( 0, 0, -180 ),
-          new THREE.Vector3( 0, 0, 180 ));
+          new THREE.Vector3( 0, 0, -50 ),
+          new THREE.Vector3( 0, 0, 50 ));
         lineGeometry.computeLineDistances();
         let pink = new THREE.Color(0xff0082);
         let axis = new MeshLine();
-        axis.setGeometry(lineGeometry, function( p ) { return .3; });
+        axis.setGeometry(lineGeometry, function( p ) { return .2; });
         let lineMesh = new THREE.Mesh(axis.geometry, new MeshLineMaterial({ color: pink }) );
+
+        // let box = new THREE.BoxGeometry( 0, 0, -55 );
+        // let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
+        // let cube = new THREE.Mesh( box, boxMaterial );
 
         let circle = new MeshLine();
         let geometry = new THREE.Geometry();
@@ -149,17 +153,18 @@
             let y = radius * Math.sin(angle * i);
             geometry.vertices.push(new THREE.Vector3(x, y, 0));
         }
-        circle.setGeometry(geometry, function( p ) { return .3; });
+        circle.setGeometry(geometry, function( p ) { return .2; });
 
         for (let i = 0; i < pillarLength; i++) {
           // circles[i] = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CircleGeometry(7, 50)), pinkLineMat);
           // circles[i].position.z = (i * .5) - ((pillarLength / 2) / 2);
           circles[i] = new THREE.Mesh( circle.geometry, new MeshLineMaterial({ color: pink }) );
-          circles[i].position.z = (i * .5) - ((pillarLength / 2) / 2);
+          circles[i].position.z = (i * .3) - ((pillarLength / 2) / 3);
           //scene.add( circleMesh );
           pillar.add(circles[i]);
         }
         //scene.add(new THREE.Line( lineGeometry, dashedLineMat ));
+        //scene.add(cube);
         scene.add(lineMesh);
         scene.add(pillar);
 
