@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>threejs - geometry</title>
+
+    <style>
+      body{
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="audioSource" src="sounds/loose.mp3"></audio>
+    <canvas id="myCanvas"></canvas>
+    <script src="three.js"></script>
+    <script src="noise.js"></script>
+    <script src="THREE.MeshLine.js"></script>
+    <script src="OrbitControls.js"></script>
+
+    <script>
+
+      var renderer,
+          scene,
+          camera,
+          controls,
+          light, light2,
+          ctx,
+          audio,
+          audioSrc,
+          analyser,
+          step,
+          delta,
+          bufferLength,
+          frequencyData,
+          circles = [],
+          pillar = new THREE.Group(),
+          pillarLength = 100,
+          noise = new Noise(10, 12345),
+          myCanvas = document.getElementById('myCanvas');
+
+      setup();
+      makeScene();
+      render();
+
+      function setup() {
+
+        //AUDIO SETUP
+        ctx = new(window.AudioContext || window.webkitAudioContext)();
+        audio = document.getElementById('audioSource');
+        audioSrc = ctx.createMediaElementSource(audio);
+        analyser = ctx.createAnalyser();
+        analyser.fftSize = 2048;
+        audioSrc.connect(analyser);
+        audioSrc.connect(ctx.destination);
+        bufferLength = analyser.frequencyBinCount;
+        frequencyData = new Uint8Array(bufferLength);
+        analyser.getByteTimeDomainData(frequencyData);
+        step = Math.round(frequencyData.length / pillarLength);
+        audio.play();
+
+        //RENDERER
+        renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
+        renderer.setClearColor(0x0033D2);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //CAMERA
+        camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 3000 );
+  			camera.position.z = -150;
+  			controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.update();
+        controls.zoomSpeed = 5.0;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        //SCENE
+        scene = new THREE.Scene();
+
+        //LIGHTS
+        light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(light);
+
+        light2 = new THREE.PointLight(0xffffff, 0.5);
+        scene.add(light2);
+
+
+      }
+
+      function render() {
+
+        analyser.getByteTimeDomainData(frequencyData);
+        requestAnimationFrame(render);
+
+        //pillar.rotation.z += 0.01;
+
+        // for (let i = 0; i < pillarLength; i++) {
+        //   let value = frequencyData[i * step] / 4;
+        //   value = value < 1 ? 1 : value;
+        //   pillar.children[i].scale.set(
+        //   value*.05,
+        //   value*.05,
+        //   1);
+        // }
+
+        if (delta <= 126) {
+          delta += 0.1;
+        }
+        else delta = 0.1;
+
+        for (let i = 0; i < pillar.children.length; i++) {
+          pillar.children[i].scale.set(
+          -2*Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
+          -2*Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
+          1);
+        }
+
+      	renderer.render(scene, camera);
+
+      }
+
+      function makeScene () {
+        //let axisHelper = new THREE.AxisHelper(5),
+        let lineGeometry = new THREE.Geometry();
+            // pinkLineMat = new THREE.LineBasicMaterial({ color: 0xff0082 }),
+            // dashedLineMat = new THREE.LineDashedMaterial( {
+            //   color: 0xff0082,
+            //   linewidth: 1,
+            //   scale: 3,
+            //   dashSize: 2,
+            //   gapSize: 2,
+            // } );
+
+        lineGeometry.vertices.push(
+          new THREE.Vector3( 0, 0, -180 ),
+          new THREE.Vector3( 0, 0, 180 ));
+        lineGeometry.computeLineDistances();
+        let pink = new THREE.Color(0xff0082);
+        let axis = new MeshLine();
+        axis.setGeometry(lineGeometry, function( p ) { return .3; });
+        let lineMesh = new THREE.Mesh(axis.geometry, new MeshLineMaterial({ color: pink }) );
+
+        let circle = new MeshLine();
+        let geometry = new THREE.Geometry();
+        let segment = 60, radius = 10;
+        let angle = 2 * Math.PI / segment;
+        for (var i = 0; i <= segment; i++) {
+            let x = radius * Math.cos(angle * i);
+            let y = radius * Math.sin(angle * i);
+            geometry.vertices.push(new THREE.Vector3(x, y, 0));
+        }
+        circle.setGeometry(geometry, function( p ) { return .3; });
+
+        for (let i = 0; i < pillarLength; i++) {
+          // circles[i] = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CircleGeometry(7, 50)), pinkLineMat);
+          // circles[i].position.z = (i * .5) - ((pillarLength / 2) / 2);
+          circles[i] = new THREE.Mesh( circle.geometry, new MeshLineMaterial({ color: pink }) );
+          circles[i].position.z = (i * .5) - ((pillarLength / 2) / 2);
+          //scene.add( circleMesh );
+          pillar.add(circles[i]);
+        }
+        //scene.add(new THREE.Line( lineGeometry, dashedLineMat ));
+        scene.add(lineMesh);
+        scene.add(pillar);
+
+      }
+
+    </script>
+  </body>
+</html>
