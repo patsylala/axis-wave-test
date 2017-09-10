@@ -22,6 +22,7 @@
     <script>
 
       var renderer,
+          svgRenderer,
           scene,
           camera,
           controls,
@@ -67,6 +68,15 @@
         renderer.setClearColor(0x0033D2);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // svgRenderer = new THREE.SVGRenderer();
+        // svgRenderer.setClearColor(0x0033D2);
+        // svgRenderer.setSize(window.innerWidth, window.innerHeight);
+        // svgRenderer.setQuality('high');
+        //
+        // svgContainer.appendChild(svgRenderer.domElement);
+        // svgRenderer.domElement.removeAttribute('width');
+        // svgRenderer.domElement.removeAttribute('height');
 
         //CAMERA
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 3000 );
@@ -121,6 +131,7 @@
         }
 
         renderer.render(scene, camera);
+        //svgRenderer.render(scene,camera);
       }
 
 
@@ -154,32 +165,16 @@
 
         var textureLoader = new THREE.TextureLoader;
         textureLoader.crossOrigin = '';
+
         var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./axis.png'), color: 0xffffff } );
         var sprite = new THREE.Sprite(spriteMaterial);
-        sprite.position.set( 0, 0, -46 );
-        sprite.scale.set( 10, 10, 1);
-        scene.add( sprite );
+        sprite.position.set( 0, 0, -50 );
+        sprite.scale.set( 15, 15, 1);
 
         var spriteMaterial2 = new THREE.SpriteMaterial( { map: textureLoader.load('./japan-foundation.png'), color: 0xffffff } );
         var sprite2 = new THREE.Sprite(spriteMaterial2);
-        sprite2.position.set( 0, 0, 46 );
-        sprite2.scale.set( 10, 10, 1);
-        scene.add( sprite2 );
-
-        // let spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader, color: 0x000000 } );
-        // let sprite2 = new THREE.Sprite( spriteMaterial );
-        // sprite2.position.set( 0, 0, -45 );
-        // sprite2.scale.set( 10, 10, 1); // imageWidth, imageHeight
-
-        //var spriteMap = new THREE.TextureLoader().load( "sprite.png" );
-        // let texture = new THREE.TextureLoader().load("textures/axis.png");
-        // console.log(texture);
-        // let myMaterial = new THREE.MeshBasicMaterial( {map:texture, color: 0x000000});
-        // let planeGeometry = new THREE.PlaneGeometry( 1, 1 );
-        // let myMesh = new THREE.Mesh(planeGeometry, myMaterial);
-        // myMesh.scale.set( 10, 10, 1);
-        // myMesh.position.set(-0.5, -0.5, 0.0);
-        // scene.add(myMesh);
+        sprite2.position.set( 0, 0, 50 );
+        sprite2.scale.set( 15, 15, 1);
 
         let circle = new MeshLine();
         let geometry = new THREE.Geometry();
@@ -200,9 +195,14 @@
           //scene.add( circleMesh );
           pillar.add(circles[i]);
         }
+
+        pillar.add(cube);
+        pillar.add(cube2);
         //scene.add(new THREE.Line( lineGeometry, dashedLineMat ));
         scene.add(cube);
         scene.add(cube2);
+        scene.add(sprite);
+        scene.add(sprite2);
         scene.add(lineMesh);
         scene.add(pillar);
 
