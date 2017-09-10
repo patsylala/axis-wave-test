@@ -152,36 +152,14 @@
         cube.position.z = -40;
         cube2.position.z = 40;
 
-        // let textureLoader = new THREE.TextureLoader();
-        // textureLoader.load(
-        // 	// resource URL
-        // 	'textures/ball.png',
-        // 	// Function when resource is loaded
-        // 	function ( texture ) {
-        // 		// do something with the texture
-        // 		var material = new THREE.MeshBasicMaterial( {
-        // 			map: texture
-        // 		 } );
-        // 	},
-        // 	// Function called when download progresses
-        // 	function ( xhr ) {
-        // 		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-        // 	},
-        // 	// Function called when download errors
-        // 	function ( xhr ) {
-        // 		console.log( 'An error happened' );
-        // 	}
-        // );
-
         var textureLoader = new THREE.TextureLoader;
         textureLoader.crossOrigin = '';
-        var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./textures/axis.png'), color: 0x000000 } );
+        var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./axis.png'), color: 0x000000 } );
         var sprite2 = new THREE.Sprite(spriteMaterial);
         sprite2.position.set( 0, 0, -45 );
         sprite2.scale.set( 10, 10, 1);
         scene.add( sprite2 );
 
-        //
         // let spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader, color: 0x000000 } );
         // let sprite2 = new THREE.Sprite( spriteMaterial );
         // sprite2.position.set( 0, 0, -45 );
