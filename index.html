@@ -14,7 +14,7 @@
   <body>
     <audio id="audioSource" src="sounds/loose.mp3"></audio>
     <canvas id="myCanvas"></canvas>
-    <script src="three.js"></script>
+    <script src="three2.js"></script>
     <script src="noise.js"></script>
     <script src="THREE.MeshLine.js"></script>
     <script src="OrbitControls.js"></script>
@@ -35,30 +35,32 @@
           bufferLength,
           frequencyData,
           circles = [],
+          cube,cube2,
+          sprite2,
           pillar = new THREE.Group(),
           pillarLength = 100,
           noise = new Noise(10, 12345),
           myCanvas = document.getElementById('myCanvas');
 
-      setup();
-      makeScene();
-      render();
+        setup();
+        makeScene();
+        render();
 
-      function setup() {
+        function setup() {
 
         //AUDIO SETUP
-        ctx = new(window.AudioContext || window.webkitAudioContext)();
-        audio = document.getElementById('audioSource');
-        audioSrc = ctx.createMediaElementSource(audio);
-        analyser = ctx.createAnalyser();
-        analyser.fftSize = 2048;
-        audioSrc.connect(analyser);
-        audioSrc.connect(ctx.destination);
-        bufferLength = analyser.frequencyBinCount;
-        frequencyData = new Uint8Array(bufferLength);
-        analyser.getByteTimeDomainData(frequencyData);
-        step = Math.round(frequencyData.length / pillarLength);
-        audio.play();
+        // ctx = new(window.AudioContext || window.webkitAudioContext)();
+        // audio = document.getElementById('audioSource');
+        // audioSrc = ctx.createMediaElementSource(audio);
+        // analyser = ctx.createAnalyser();
+        // analyser.fftSize = 2048;
+        // audioSrc.connect(analyser);
+        // audioSrc.connect(ctx.destination);
+        // bufferLength = analyser.frequencyBinCount;
+        // frequencyData = new Uint8Array(bufferLength);
+        // analyser.getByteTimeDomainData(frequencyData);
+        // step = Math.round(frequencyData.length / pillarLength);
+        // audio.play();
 
         //RENDERER
         renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
@@ -70,10 +72,10 @@
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 3000 );
   			camera.position.z = -150;
   			controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.enableZoom = false;
+        //controls.enableZoom = false;
         controls.enablePan = false;
         controls.update();
-        controls.zoomSpeed = 5.0;
+        controls.zoomSpeed = 5.0
 
         //SCENE
         scene = new THREE.Scene();
@@ -89,8 +91,11 @@
 
       function render() {
 
-        analyser.getByteTimeDomainData(frequencyData);
+        //analyser.getByteTimeDomainData(frequencyData);
         requestAnimationFrame(render);
+
+        cube.rotation.z += 0.1;
+        cube2.rotation.z += 0.1;
 
         //pillar.rotation.z += 0.01;
 
@@ -110,14 +115,14 @@
 
         for (let i = 0; i < pillar.children.length; i++) {
           pillar.children[i].scale.set(
-          -2*Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
-          -2*Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
+          -Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
+          -Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
           1);
         }
 
-      	renderer.render(scene, camera);
-
+        renderer.render(scene, camera);
       }
+
 
       function makeScene () {
         //let axisHelper = new THREE.AxisHelper(5),
@@ -132,17 +137,65 @@
             // } );
 
         lineGeometry.vertices.push(
-          new THREE.Vector3( 0, 0, -50 ),
-          new THREE.Vector3( 0, 0, 50 ));
+          new THREE.Vector3( 0, 0, -40 ),
+          new THREE.Vector3( 0, 0, 40 ));
         lineGeometry.computeLineDistances();
         let pink = new THREE.Color(0xff0082);
         let axis = new MeshLine();
         axis.setGeometry(lineGeometry, function( p ) { return .2; });
         let lineMesh = new THREE.Mesh(axis.geometry, new MeshLineMaterial({ color: pink }) );
 
-        // let box = new THREE.BoxGeometry( 0, 0, -55 );
-        // let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
-        // let cube = new THREE.Mesh( box, boxMaterial );
+        let box = new THREE.BoxGeometry(  1, 1, 1 );
+        let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
+        cube = new THREE.Mesh( box, boxMaterial );
+        cube2 = new THREE.Mesh( box, boxMaterial );
+        cube.position.z = -40;
+        cube2.position.z = 40;
+
+        // let textureLoader = new THREE.TextureLoader();
+        // textureLoader.load(
+        // 	// resource URL
+        // 	'textures/ball.png',
+        // 	// Function when resource is loaded
+        // 	function ( texture ) {
+        // 		// do something with the texture
+        // 		var material = new THREE.MeshBasicMaterial( {
+        // 			map: texture
+        // 		 } );
+        // 	},
+        // 	// Function called when download progresses
+        // 	function ( xhr ) {
+        // 		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+        // 	},
+        // 	// Function called when download errors
+        // 	function ( xhr ) {
+        // 		console.log( 'An error happened' );
+        // 	}
+        // );
+
+        var textureLoader = new THREE.TextureLoader;
+        textureLoader.crossOrigin = '';
+        var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./textures/axis.png'), color: 0x000000 } );
+        var sprite2 = new THREE.Sprite(spriteMaterial);
+        sprite2.position.set( 0, 0, -45 );
+        sprite2.scale.set( 10, 10, 1);
+        scene.add( sprite2 );
+
+        //
+        // let spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader, color: 0x000000 } );
+        // let sprite2 = new THREE.Sprite( spriteMaterial );
+        // sprite2.position.set( 0, 0, -45 );
+        // sprite2.scale.set( 10, 10, 1); // imageWidth, imageHeight
+
+        //var spriteMap = new THREE.TextureLoader().load( "sprite.png" );
+        // let texture = new THREE.TextureLoader().load("textures/axis.png");
+        // console.log(texture);
+        // let myMaterial = new THREE.MeshBasicMaterial( {map:texture, color: 0x000000});
+        // let planeGeometry = new THREE.PlaneGeometry( 1, 1 );
+        // let myMesh = new THREE.Mesh(planeGeometry, myMaterial);
+        // myMesh.scale.set( 10, 10, 1);
+        // myMesh.position.set(-0.5, -0.5, 0.0);
+        // scene.add(myMesh);
 
         let circle = new MeshLine();
         let geometry = new THREE.Geometry();
@@ -164,11 +217,13 @@
           pillar.add(circles[i]);
         }
         //scene.add(new THREE.Line( lineGeometry, dashedLineMat ));
-        //scene.add(cube);
+        scene.add(cube);
+        scene.add(cube2);
         scene.add(lineMesh);
         scene.add(pillar);
 
       }
+
 
     </script>
   </body>
