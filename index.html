@@ -98,12 +98,8 @@
         //analyser.getByteTimeDomainData(frequencyData);
         requestAnimationFrame(render);
 
-        cube.rotation.z += 0.1;
-        cube2.rotation.z += 0.1;
-        axis.rotation.y += 0.01;
-        pillar.rotation.y += 0.01;
-        axis.rotation.x += 0.01;
-        pillar.rotation.x += 0.01;
+        cube.rotation.z = cube2.rotation.z += 0.1;
+        axis.rotation.y = pillar.rotation.y = axis.rotation.x = pillar.rotation.x = 0.1 * cube.rotation.z;
 
         // for (let i = 0; i < pillarLength; i++) {
         //   let value = frequencyData[i * step] / 4;
