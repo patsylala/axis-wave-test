@@ -98,8 +98,13 @@
         //analyser.getByteTimeDomainData(frequencyData);
         requestAnimationFrame(render);
 
-        cube.rotation.z = cube2.rotation.z += 0.1;
-        axis.rotation.y = pillar.rotation.y = axis.rotation.x = pillar.rotation.x = 0.1 * cube.rotation.z;
+        if (delta <= 126) {
+          delta += 0.1;
+        }
+        else delta = 0.1;
+
+        cube.rotation.z = cube2.rotation.z += delta;
+        axis.rotation.y = pillar.rotation.y = axis.rotation.x = pillar.rotation.x = delta * delta;
 
         // for (let i = 0; i < pillarLength; i++) {
         //   let value = frequencyData[i * step] / 4;
@@ -109,11 +114,6 @@
         //   value*.05,
         //   1);
         // }
-
-        if (delta <= 126) {
-          delta += 0.1;
-        }
-        else delta = 0.1;
 
         for (let i = 0; i < pillar.children.length; i++) {
           pillar.children[i].scale.set(
@@ -170,7 +170,8 @@
         let geometry = new THREE.Geometry();
         let segment = 60, radius = 10;
         let angle = 2 * Math.PI / segment;
-        for (var i = 0; i <= segment; i++) {
+
+        for (let i = 0; i <= segment; i++) {
             let x = radius * Math.cos(angle * i);
             let y = radius * Math.sin(angle * i);
             geometry.vertices.push(new THREE.Vector3(x, y, 0));
@@ -186,7 +187,6 @@
         axis.add(cube);
         axis.add(cube2);
         axis.add(new THREE.Line( lineGeometry, dashedLineMat ));
-        //axis.add(lineMesh);
         axis.add(sprite);
         axis.add(sprite2);
 
