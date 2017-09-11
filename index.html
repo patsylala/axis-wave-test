@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>threejs - geometry</title>
 
     <style>
@@ -45,7 +46,7 @@
           image,
           axis = new THREE.Group(),
           pillar = new THREE.Group(),
-          pillarLength = 70,
+          pillarLength = 100,
           lineLength = 40,
           noise = new Noise(10, 12345),
           myCanvas = document.getElementById('myCanvas');
@@ -105,12 +106,12 @@
         //analyser.getByteTimeDomainData(frequencyData);
         requestAnimationFrame(render);
 
-        cube.rotation.z = delta;
-        cube2.rotation.z = delta;
-        pillar.rotation.x = delta;
-        pillar.rotation.y = delta;
-        axis.rotation.x = delta;
-        axis.rotation.y = delta;
+        // cube.rotation.z = delta;
+        // cube2.rotation.z = delta;
+        // pillar.rotation.x = delta;
+        // pillar.rotation.y = delta;
+        // axis.rotation.x = delta;
+        // axis.rotation.y = delta;
 
         // for (let i = 0; i < pillarLength; i++) {
         //   let value = frequencyData[i * step] / 4;
@@ -150,7 +151,7 @@
         //MATERIALS
 				let lineMaterial = new THREE.LineDashedMaterial( {
 					color: pink,
-          linewidth: 2,
+          linewidth: 1,
           dashSize: 10,
           gapSize: 10
 				} );
