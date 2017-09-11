@@ -14,7 +14,7 @@
   <body>
     <audio id="audioSource" src="sounds/loose.mp3"></audio>
     <canvas id="myCanvas"></canvas>
-    <script src="three2.js"></script>
+    <script src="three.js"></script>
     <script src="noise.js"></script>
     <script src="THREE.MeshLine.js"></script>
     <script src="OrbitControls.js"></script>
@@ -38,6 +38,8 @@
           circles = [],
           cube,cube2,
           sprite2,
+          lineLength = 40,
+          axis = new THREE.Group(),
           pillar = new THREE.Group(),
           pillarLength = 100,
           noise = new Noise(10, 12345),
@@ -106,8 +108,10 @@
 
         cube.rotation.z += 0.1;
         cube2.rotation.z += 0.1;
-
-        //pillar.rotation.z += 0.01;
+        axis.rotation.y += 0.01;
+        pillar.rotation.y += 0.01;
+        axis.rotation.x += 0.01;
+        pillar.rotation.x += 0.01;
 
         // for (let i = 0; i < pillarLength; i++) {
         //   let value = frequencyData[i * step] / 4;
@@ -136,25 +140,26 @@
 
 
       function makeScene () {
-        //let axisHelper = new THREE.AxisHelper(5),
+      //let axisHelper = new THREE.AxisHelper(5),
         let lineGeometry = new THREE.Geometry();
-            // pinkLineMat = new THREE.LineBasicMaterial({ color: 0xff0082 }),
-            // dashedLineMat = new THREE.LineDashedMaterial( {
-            //   color: 0xff0082,
-            //   linewidth: 1,
-            //   scale: 3,
-            //   dashSize: 2,
-            //   gapSize: 2,
-            // } );
+      //let inkLineMat = new THREE.LineBasicMaterial({ color: 0xff0082 }),
+        let dashedLineMat = new THREE.LineDashedMaterial( {
+              color: 0xff0082,
+              linewidth: 1,
+              scale: 3,
+              dashSize: 2,
+              gapSize: 2,
+            } );
 
         lineGeometry.vertices.push(
-          new THREE.Vector3( 0, 0, -40 ),
-          new THREE.Vector3( 0, 0, 40 ));
+          new THREE.Vector3( 0, 0, -lineLength ),
+          new THREE.Vector3( 0, 0, lineLength ));
         lineGeometry.computeLineDistances();
         let pink = new THREE.Color(0xff0082);
-        let axis = new MeshLine();
-        axis.setGeometry(lineGeometry, function( p ) { return .2; });
-        let lineMesh = new THREE.Mesh(axis.geometry, new MeshLineMaterial({ color: pink }) );
+        var dashedMesh = new THREE.Line(lineGeometry, dashedLineMat);
+        let axisLine = new MeshLine();
+        axisLine.setGeometry(lineGeometry, function( p ) { return .2; });
+        let lineMesh = new THREE.Mesh(axisLine.geometry, new MeshLineMaterial({ color: pink }) );
 
         let box = new THREE.BoxGeometry(  1, 1, 1 );
         let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
@@ -168,12 +173,12 @@
 
         var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./axis.png'), color: 0xffffff } );
         var sprite = new THREE.Sprite(spriteMaterial);
-        sprite.position.set( 0, 0, -50 );
+        sprite.position.set( 0, 0, -lineLength - 13 );
         sprite.scale.set( 15, 15, 1);
 
         var spriteMaterial2 = new THREE.SpriteMaterial( { map: textureLoader.load('./japan-foundation.png'), color: 0xffffff } );
         var sprite2 = new THREE.Sprite(spriteMaterial2);
-        sprite2.position.set( 0, 0, 50 );
+        sprite2.position.set( 0, 0, lineLength + 13 );
         sprite2.scale.set( 15, 15, 1);
 
         let circle = new MeshLine();
@@ -196,14 +201,14 @@
           pillar.add(circles[i]);
         }
 
-        pillar.add(cube);
-        pillar.add(cube2);
-        //scene.add(new THREE.Line( lineGeometry, dashedLineMat ));
-        scene.add(cube);
-        scene.add(cube2);
-        scene.add(sprite);
-        scene.add(sprite2);
-        scene.add(lineMesh);
+        axis.add(cube);
+        axis.add(cube2);
+        axis.add(new THREE.Line( lineGeometry, dashedLineMat ));
+        axis.add(sprite);
+        axis.add(sprite2);
+        //axis.add(lineMesh);
+
+        scene.add(axis);
         scene.add(pillar);
 
       }
