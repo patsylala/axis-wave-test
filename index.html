@@ -207,14 +207,14 @@
         // let spriteTexture = new THREE.Texture( spriteImage );
         // spriteTexture.needsUpdate = true;
 
-        var svgManager = new THREE.SVGLoader();
-        var url = './axis.svg';
-
-        svgManager.load(url,
-                        svg_loading_done_callback,
-                        function(){console.log("Loading SVG...");},
-                        function(){console.log("Error loading SVG!");
-                        });
+        // var svgManager = new THREE.SVGLoader();
+        // var url = './axis.svg';
+        //
+        // svgManager.load(url,
+        //                 svg_loading_done_callback,
+        //                 function(){console.log("Loading SVG...");},
+        //                 function(){console.log("Error loading SVG!");
+        //                 });
 
         //ADD TO SCENE
         axis.add(cube);
@@ -230,13 +230,13 @@
 
       }
 
-      function svg_loading_done_callback(doc) {
-        image = new THREE.SVGObject(doc);
-        image.position.x = 1000;
-        image.position.y = 1000;
-        image.position.z = 1000;
-        scene.add(image);
-      };
+      // function svg_loading_done_callback(doc) {
+      //   image = new THREE.SVGObject(doc);
+      //   image.position.x = 1000;
+      //   image.position.y = 1000;
+      //   image.position.z = 1000;
+      //   scene.add(image);
+      // };
 
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
