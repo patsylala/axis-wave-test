@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>threejs - geometry</title>
 
     <style>
@@ -14,10 +14,14 @@
   </head>
   <body>
     <!-- <audio id="audioSource" src="sounds/loose.mp3"></audio> -->
-    <canvas id="myCanvas"></canvas>
+    <!-- <canvas id="myCanvas"></canvas> -->
     <script src="three.js"></script>
     <script src="noise.js"></script>
-    <script src="THREE.MeshLine.js"></script>
+    <script src="SVGRenderer.js"></script>
+    <script src="SVGLoader.js"></script>
+    <script src="Projector.js"></script>
+    <script src="Detector.js"></script>
+    <!-- <script src="THREE.MeshLine.js"></script> -->
     <script src="OrbitControls.js"></script>
 
     <script>
@@ -43,6 +47,7 @@
           axis = new THREE.Group(),
           pillar = new THREE.Group(),
           pillarLength = 100,
+          lineLength = 40,
           noise = new Noise(10, 12345),
           myCanvas = document.getElementById('myCanvas');
 
@@ -67,10 +72,13 @@
         // audio.play();
 
         //RENDERER
-        renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
+        //renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
+        renderer = new THREE.SVGRenderer();
         renderer.setClearColor(0x0033D2);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild( renderer.domElement );
+        //renderer.setQuality('high');
 
         //CAMERA
         camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 3000 );
@@ -98,8 +106,12 @@
         //analyser.getByteTimeDomainData(frequencyData);
         requestAnimationFrame(render);
 
-        cube.rotation.z = cube2.rotation.z += 0.1;
-        axis.rotation.y = pillar.rotation.y = axis.rotation.x = pillar.rotation.x = 0.1 * cube.rotation.z;
+        // cube.rotation.z = delta;
+        // cube2.rotation.z = delta;
+        // pillar.rotation.x = delta;
+        // pillar.rotation.y = delta;
+        // axis.rotation.x = delta;
+        // axis.rotation.y = delta;
 
         // for (let i = 0; i < pillarLength; i++) {
         //   let value = frequencyData[i * step] / 4;
@@ -111,30 +123,24 @@
         // }
 
         if (delta <= 126) {
-          delta += 0.1;
+          delta += 0.01;
         }
-        else delta = 0.1;
+        else delta = 0.01;
 
         for (let i = 0; i < pillar.children.length; i++) {
           pillar.children[i].scale.set(
-          -Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
-          -Math.sin((i * .08) + (delta * .5)) + noise.value(i) ,
+          -Math.sin((i * .08) + (delta * 5)) + noise.value(i) ,
+          -Math.sin((i * .08) + (delta * 5)) + noise.value(i) ,
           1);
         }
 
         renderer.render(scene, camera);
+
       }
 
       function makeScene () {
-      //let axisHelper = new THREE.AxisHelper(5),
         let lineGeometry = new THREE.Geometry();
-        let dashedLineMat = new THREE.LineDashedMaterial( {
-              color: 0xff0082,
-              linewidth: 1,
-              scale: 3,
-              dashSize: 2,
-              gapSize: 2,
-            } );
+        let pink = new THREE.Color(0xff0082);
 
         //LINE
         lineGeometry.vertices.push(
@@ -142,53 +148,86 @@
           new THREE.Vector3( 0, 0, lineLength ));
         lineGeometry.computeLineDistances();
         let pink = new THREE.Color(0xff0082);
+        var dashedMesh = new THREE.Line(lineGeometry, dashedLineMat);
+        let axisLine = new MeshLine();
+        axisLine.setGeometry(lineGeometry, function( p ) { return .2; });
+        let lineMesh = new THREE.Mesh(axisLine.geometry, new MeshLineMaterial({ color: pink }) );
 
-        //BOX
-        let box = new THREE.BoxGeometry(  1, 1, 1 );
-        let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
-        cube = new THREE.Mesh( box, boxMaterial );
-        cube2 = new THREE.Mesh( box, boxMaterial );
-        cube.position.z = -40;
-        cube2.position.z = 40;
+        //MATERIALS
+				let lineMaterial = new THREE.LineDashedMaterial( {
+					color: pink,
+          linewidth: 1,
+          dashSize: 10,
+          gapSize: 10
+				} );
 
-        //SPRITES
-        var textureLoader = new THREE.TextureLoader;
-        textureLoader.crossOrigin = '';
+        let lineBasicMaterial = new THREE.LineBasicMaterial( {
+          color: pink,
+          linewidth: 2,
+        } );
 
-        var spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./axis.png'), color: 0xffffff } );
-        var sprite = new THREE.Sprite(spriteMaterial);
-        sprite.position.set( 0, 0, -lineLength - 13 );
-        sprite.scale.set( 15, 15, 1);
-
-        var spriteMaterial2 = new THREE.SpriteMaterial( { map: textureLoader.load('./japan-foundation.png'), color: 0xffffff } );
-        var sprite2 = new THREE.Sprite(spriteMaterial2);
-        sprite2.position.set( 0, 0, lineLength + 13 );
-        sprite2.scale.set( 15, 15, 1);
+				let line = new THREE.Line( lineGeometry, lineMaterial );
 
         //CIRCLES
-        let circle = new MeshLine();
-        let geometry = new THREE.Geometry();
+        let circleGeometry = new THREE.Geometry();
         let segment = 60, radius = 10;
         let angle = 2 * Math.PI / segment;
         for (var i = 0; i <= segment; i++) {
             let x = radius * Math.cos(angle * i);
             let y = radius * Math.sin(angle * i);
-            geometry.vertices.push(new THREE.Vector3(x, y, 0));
+            circleGeometry.vertices.push(new THREE.Vector3(x, y, 0));
         }
-        circle.setGeometry(geometry, function( p ) { return .2; });
 
+        //PILLAR
         for (let i = 0; i < pillarLength; i++) {
-          circles[i] = new THREE.Mesh( circle.geometry, new MeshLineMaterial({ color: pink }) );
+          circles[i] = new THREE.Line(circleGeometry, lineBasicMaterial);
           circles[i].position.z = (i * .3) - ((pillarLength / 2) / 3);
           pillar.add(circles[i]);
         }
 
+        //BOXES
+        let box = new THREE.BoxGeometry(  1, 1, 1 );
+        let boxMaterial = new THREE.MeshBasicMaterial( {color: 0xff0082} );
+        cube = new THREE.Mesh( box, boxMaterial );
+        cube2 = new THREE.Mesh( box, boxMaterial );
+        cube.position.z = -lineLength;
+        cube2.position.z = lineLength;
+
+        //SPRITES
+        // let textureLoader = new THREE.TextureLoader;
+        // textureLoader.crossOrigin = true;
+        //
+        // let spriteMaterial = new THREE.SpriteMaterial( { map: textureLoader.load('./axis.png'), color: 0xffffff} );
+        // let sprite = new THREE.Sprite(spriteMaterial);
+        // sprite.position.set( 0, 0, -lineLength - 10 )
+        // sprite.scale.set( 15, 15, 1);
+        //
+        // let spriteMaterial2 = new THREE.SpriteMaterial( { map: textureLoader.load('./japan-foundation.png'), color: 0xffffff } );
+        // let sprite2 = new THREE.Sprite(spriteMaterial2);
+        // sprite2.position.set( 0, 0, lineLength + 10 );
+        // sprite2.scale.set( 15, 15, 1);
+
+        // let spriteImage = document.createElement( 'img' );
+        // spriteImage.src = './axis.png';
+        //
+        // let spriteTexture = new THREE.Texture( spriteImage );
+        // spriteTexture.needsUpdate = true;
+
+        // var svgManager = new THREE.SVGLoader();
+        // var url = './axis.svg';
+        //
+        // svgManager.load(url,
+        //                 svg_loading_done_callback,
+        //                 function(){console.log("Loading SVG...");},
+        //                 function(){console.log("Error loading SVG!");
+        //                 });
+
+        //ADD TO SCENE
         axis.add(cube);
         axis.add(cube2);
-        axis.add(new THREE.Line( lineGeometry, dashedLineMat ));
-        //axis.add(lineMesh);
-        axis.add(sprite);
-        axis.add(sprite2);
+        // axis.add(sprite);
+        // axis.add(sprite2);
+        axis.add( line );
 
         scene.add(axis);
         scene.add(pillar);
@@ -196,6 +235,14 @@
         window.addEventListener( 'resize', onWindowResize, false );
 
       }
+
+      // function svg_loading_done_callback(doc) {
+      //   image = new THREE.SVGObject(doc);
+      //   image.position.x = 1000;
+      //   image.position.y = 1000;
+      //   image.position.z = 1000;
+      //   scene.add(image);
+      // };
 
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
