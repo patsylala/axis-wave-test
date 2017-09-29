@@ -19,8 +19,6 @@
     <script src="noise.js"></script>
     <script src="SVGRenderer.js"></script>
     <script src="SVGLoader.js"></script>
-    <script src="Projector.js"></script>
-    <script src="Detector.js"></script>
     <!-- <script src="THREE.MeshLine.js"></script> -->
     <script src="OrbitControls.js"></script>
 
@@ -147,7 +145,6 @@
           new THREE.Vector3( 0, 0, -lineLength ),
           new THREE.Vector3( 0, 0, lineLength ));
         lineGeometry.computeLineDistances();
-        let pink = new THREE.Color(0xff0082);
         var dashedMesh = new THREE.Line(lineGeometry, dashedLineMat);
         let axisLine = new MeshLine();
         axisLine.setGeometry(lineGeometry, function( p ) { return .2; });
