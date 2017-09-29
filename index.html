@@ -19,6 +19,8 @@
     <script src="noise.js"></script>
     <script src="SVGRenderer.js"></script>
     <script src="SVGLoader.js"></script>
+    <script src="Projector.js"></script>
+    <script src="Detector.js"></script>
     <!-- <script src="THREE.MeshLine.js"></script> -->
     <script src="OrbitControls.js"></script>
 
@@ -41,7 +43,7 @@
           circles = [],
           cube,cube2,
           sprite2,
-          lineLength = 40,
+          image,
           axis = new THREE.Group(),
           pillar = new THREE.Group(),
           pillarLength = 100,
@@ -145,10 +147,6 @@
           new THREE.Vector3( 0, 0, -lineLength ),
           new THREE.Vector3( 0, 0, lineLength ));
         lineGeometry.computeLineDistances();
-        var dashedMesh = new THREE.Line(lineGeometry, dashedLineMat);
-        let axisLine = new MeshLine();
-        axisLine.setGeometry(lineGeometry, function( p ) { return .2; });
-        let lineMesh = new THREE.Mesh(axisLine.geometry, new MeshLineMaterial({ color: pink }) );
 
         //MATERIALS
 				let lineMaterial = new THREE.LineDashedMaterial( {
